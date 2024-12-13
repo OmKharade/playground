@@ -7,14 +7,18 @@ Using shadcn.ui components and Next.js, a playground for every possible full-sta
 installed nextjs
 
 localhost:3000 looks like this
-<img src="readme-extras/next-js-default.png">
+
+![Default NextJS](readme-extras/next-js-default.png)
 
 ### 7/27
 installed shadcn components
 
 localhost:3000 looks like this
-<img src="readme-extras/next-js-shad.png">
 
-reading and implementing [nextjs docs](https://nextjs.org/docs/app/building-your-application) 
+![Shadcn NextJS](readme-extras/next-js-shad.png)
 
-![Building your Application on Nextjs docs](readme-extras/image.png)
+### 12/13
+
+mail sidebar on /mail
+
+![Sidebar](readme-extras/image.png)
