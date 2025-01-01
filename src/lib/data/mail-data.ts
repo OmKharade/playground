@@ -1,5 +1,13 @@
+export type Account = {
+  id: string
+  email: string
+  name: string
+  avatar?: string
+}
+
 export type Email = {
     id: string
+    accountId: string
     subject: string
     from: string
     to: string[]
@@ -16,9 +24,25 @@ export type Email = {
     date: string
   }
   
+  export const accounts: Account[] = [
+    {
+      id: "1",
+      email: "sarah.mitchell@company.com",
+      name: "Sarah Mitchell",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
+    },
+    {
+      id: "2",
+      email: "john.doe@company.com",
+      name: "John Doe",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=John"
+    }
+  ]
+
   export const emails: Email[] = [
     {
       id: "1",
+      accountId: "1",
       subject: "Project Update - Q4 2024 Planning",
       from: "sarah.mitchell@company.com",
       to: ["user@example.com"],
@@ -49,6 +73,7 @@ export type Email = {
     },
     {
       id: "2",
+      accountId: "2",
       subject: "Weekend Meetup Plans",
       from: "john.doe@friend.com",
       to: ["user@example.com"],
