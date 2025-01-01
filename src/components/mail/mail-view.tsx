@@ -1,56 +1,102 @@
 import { Button } from "@/components/ui/button"
 import { Email } from "@/lib/data/mail-data"
 import { format } from "date-fns"
-import { Reply, Star, Trash, Forward } from "lucide-react"
+import { 
+  Reply, 
+  Star, 
+  Trash, 
+  Forward, 
+  ArchiveX, 
+  ReplyAll, 
+  MoreVertical,
+  Tag,
+  Mail 
+} from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface MailViewProps {
   email?: Email
 }
 
 export function MailView({ email }: MailViewProps) {
-  if (!email) {
-    return 
-  }
+  if (!email) return null
 
   return (
     <div className="flex-1 overflow-auto">
-      <div className="p-4 border-b">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">{email.subject}</h2>
-          <div className="flex items-center gap-2">
+      <div className="border-b">
+        <div className="p-3 border-b flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon">
-              <Star className={email.isStarred ? "fill-yellow-400" : ""} />
+              <Reply className="h-5 w-5" />
             </Button>
             <Button variant="ghost" size="icon">
-              <Trash />
+              <ReplyAll className="h-5 w-5" />
             </Button>
+            <Button variant="ghost" size="icon">
+              <Forward className="h-5 w-5" />
+            </Button>
+          </div>
+
+          <div className="h-6 w-px bg-border mx-2" />
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon">
+              <ArchiveX className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <Trash className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <Star className={`h-5 w-5 ${email.isStarred ? "fill-yellow-400 text-yellow-400" : ""}`} />
+            </Button>
+          </div>
+
+          <div className="ml-auto">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <MoreVertical className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>
+                  <Tag className="mr-2 h-5 w-5" /> Add label
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Mail className="mr-2 h-5 w-5" /> Mark as unread
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
-        <div className="mt-2 space-y-2">
-          <div className="flex justify-between text-sm">
-            <div>
-              <span className="font-semibold">From: </span>
-              {email.from}
+
+        {/* Email Header */}
+        <div className="px-6 py-4">
+          <h2 className="text-2xl font-semibold">{email.subject}</h2>
+          <div className="mt-2 space-y-2">
+            <div className="flex justify-between text-sm">
+              <div>
+                <span className="font-semibold">From: </span>
+                {email.from}
+              </div>
+              <div className="text-muted-foreground">
+                {format(new Date(email.date), "PPpp")}
+              </div>
             </div>
-            <div className="text-muted-foreground">
-              {format(new Date(email.date), "PPpp")}
+            <div className="text-sm">
+              <span className="font-semibold">To: </span>
+              {email.to.join(", ")}
             </div>
-          </div>
-          <div className="text-sm">
-            <span className="font-semibold">To: </span>
-            {email.to.join(", ")}
           </div>
         </div>
       </div>
-      <div className="p-4 space-y-4">
-        <div className="flex gap-2">
-          <Button>
-            <Reply className="mr-2 h-4 w-4" /> Reply
-          </Button>
-          <Button variant="outline">
-            <Forward className="mr-2 h-4 w-4" /> Forward
-          </Button>
-        </div>
+
+      {/* Email Content */}
+      <div className="p-6">
         <div className="whitespace-pre-wrap">{email.body}</div>
         {email.attachments && email.attachments.length > 0 && (
           <div className="border rounded-lg p-4">
