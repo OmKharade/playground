@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
-import { Email } from "@/lib/data/mail-data"
 import { format } from "date-fns"
+import { Email } from "@/types/database"
 import { 
   Reply, 
   Star, 
@@ -51,7 +51,7 @@ export function MailView({ email }: MailViewProps) {
               <Trash className="h-5 w-5" />
             </Button>
             <Button variant="ghost" size="icon">
-              <Star className={`h-5 w-5 ${email.isStarred ? "fill-yellow-400 text-yellow-400" : ""}`} />
+              <Star className={`h-5 w-5 ${email.is_starred ? "fill-yellow-400 text-yellow-400" : ""}`} />
             </Button>
           </div>
 
@@ -89,7 +89,7 @@ export function MailView({ email }: MailViewProps) {
             </div>
             <div className="text-sm">
               <span className="font-semibold">To: </span>
-              {email.to.join(", ")}
+              {email.to.map((to) => to.name).join(", ")}
             </div>
           </div>
         </div>

@@ -9,15 +9,20 @@ import {
   PenSquare 
 } from "lucide-react"
 import { AccountSwitcher } from "./account-switcher"
+import { Account } from "@/types/database"
 
 interface MailSidebarProps{
+  accounts: Account[]
+  selectedFolder: string
   selectedAccount: string
   onSelectAccount: (accountId: string) => void
+  onSelectFolder: (folder: string) => void
 }
-export function MailSidebar({selectedAccount, onSelectAccount}: MailSidebarProps) {
+export function MailSidebar({accounts, selectedFolder, onSelectFolder,selectedAccount, onSelectAccount}: MailSidebarProps) {
   return (
     <div className="w-[240px] p-4">
       <AccountSwitcher
+        accounts = {accounts}
         selectedAccount = {selectedAccount}
         onSelectAccount = {onSelectAccount}
       />

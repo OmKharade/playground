@@ -1,14 +1,15 @@
-import { accounts } from "@/lib/data/mail-data";
 import React from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Account } from "@/types/database";
 
 interface AccountSwitcherProps{
+    accounts: Account[]
     selectedAccount: string
     onSelectAccount: (accountId: string) => void
 }
 
-export function AccountSwitcher({selectedAccount, onSelectAccount}: AccountSwitcherProps){
+export function AccountSwitcher({accounts, selectedAccount, onSelectAccount}: AccountSwitcherProps){
     return(
         <Select value={selectedAccount} onValueChange={onSelectAccount}>
       <SelectTrigger className="w-full flex items-center gap-2">

@@ -7,12 +7,17 @@ export type Account = {
     updated_at: string
   }
   
+export type EmailRecipient = {
+    email: string
+    name: string
+}
+
   export type Email = {
     id: string
     account_id: string
     subject: string | null
     from: string
-    to: string[]
+    to: EmailRecipient[]
     body: string
     is_read: boolean
     is_starred: boolean

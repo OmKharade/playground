@@ -1,9 +1,9 @@
 // components/mail/mail-list.tsx
-import { Email } from "@/lib/data/mail-data"
 import { formatDistanceToNow } from "date-fns"
 import { Star } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "../ui/badge"
+import { Email } from "@/types/database"
 
 interface MailListProps {
   emails: Email[]
@@ -24,7 +24,7 @@ export function MailList({ emails, selectedEmail, onSelectEmail }: MailListProps
             className={cn(
               "flex flex-col gap-2 p-4 rounded-lg border cursor-pointer hover:bg-accent/50",
               selectedEmail === email.id && "bg-accent",
-              !email.isRead && "font-semibold"
+              !email.is_read && "font-semibold"
             )}
             onClick={() => onSelectEmail(email.id)}
           >
@@ -36,7 +36,7 @@ export function MailList({ emails, selectedEmail, onSelectEmail }: MailListProps
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm truncate">{email.subject}</span>
-              {email.isStarred && (
+              {email.is_starred && (
                 <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
               )}
             </div>
