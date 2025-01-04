@@ -18,7 +18,9 @@ export function Mail(){
     const [selectedEmail, setSelectedEmail] = useState<string | undefined>()
     const [selectedAccount, setSelectedAccount] = useState<string>()
     const [selectedFolder, setSelectedFolder] = useState<string>('inbox')
+    const [folderCounts, setFolderCounts] = useState<Record<string, number>>({})
     const [loading, setLoading] = useState(true)
+    const [isFolderCountLoading, setIsFolderCountLoading] = useState(true)
 
     useEffect(() => {
       async function loadAccounts(){
@@ -54,7 +56,22 @@ export function Mail(){
     }, [selectedAccount, selectedFolder])
 
     const currentEmail = emails.find((email) => email.id === selectedEmail);
-
+    
+    useEffect(() => {
+      async function loadFolderCounts() {
+          if (!selectedAccount) return
+          setIsFolderCountLoading(true)
+          try {
+              const counts = await emailApi.getFolderCounts(selectedAccount)
+              setFolderCounts(counts)
+          } catch (error) {
+              console.error("Failed to load folder counts:", error)
+          } finally {
+              setIsFolderCountLoading(false)
+          }
+      }
+      loadFolderCounts()
+  }, [selectedAccount])
     if (!selectedAccount) {
       return (
         <div className="flex h-screen">
@@ -73,6 +90,8 @@ export function Mail(){
             onSelectFolder = {setSelectedFolder}
             selectedAccount = {selectedAccount}
             onSelectAccount = {setSelectedAccount}
+            folderCount={folderCounts}
+            isFolderCountLoading={isFolderCountLoading}
           />
           <Separator orientation="vertical"/>
           <MailList

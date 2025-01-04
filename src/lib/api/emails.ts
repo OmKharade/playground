@@ -20,6 +20,23 @@ export const emailApi = {
         if (error) throw error
         return data
     },
+    getFolderCounts: async (accountId: string) => {
+        const folders = ['inbox', 'sent', 'drafts', 'spam', 'trash', 'starred']
+        const counts: Record<string, number> = {}
+        
+        for (const folder of folders) {
+            const { count, error } = await supabase
+                .from('emails')
+                .select('*', { count: 'exact', head: true })
+                .eq('account_id', accountId)
+                .eq('folder', folder)
+
+            if (error) throw error
+            counts[folder] = count || 0
+        }
+        
+        return counts
+    },
     updateEmail: async (id:string, updates: Partial<Email>) => {
         const {data, error} = await supabase
             .from('emails')

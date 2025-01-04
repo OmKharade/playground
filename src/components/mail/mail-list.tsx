@@ -27,13 +27,17 @@ export function MailList({ emails, selectedEmail, onSelectEmail, folder, loading
             key={email.id}
             className={cn(
               "flex flex-col gap-2 p-4 rounded-lg border cursor-pointer hover:bg-accent/50",
-              selectedEmail === email.id && "bg-accent",
-              !email.is_read && "font-semibold"
+              selectedEmail === email.id && "bg-accent"
             )}
             onClick={() => onSelectEmail(email.id)}
           >
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">{email.from}</span>
+              <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">{email.from.name}</span>
+              {!email.is_read && (
+                <div className="w-2 h-2 rounded-full bg-blue-600 flex-shrink-0" />
+              )}
+              </div>
               <span className="text-xs text-muted-foreground">
                 {formatDistanceToNow(new Date(email.date), { addSuffix: true })}
               </span>

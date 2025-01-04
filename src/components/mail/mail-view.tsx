@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 import { MailViewSkeleton } from "./mail-skeleton"
+import { Avatar, AvatarFallback } from "../ui/avatar"
 
 interface MailViewProps {
   email?: Email
@@ -117,24 +118,30 @@ export function MailView({ email, loading }: MailViewProps) {
         </div>
 
         {/* Email Header */}
-        <div className="px-6 py-4">
-          <h2 className="text-2xl font-semibold">{email.subject}</h2>
-          <div className="mt-2 space-y-2">
-            <div className="flex justify-between text-sm">
-              <div>
-                <span className="font-semibold">From: </span>
-                {email.from}
+        <div className="px-6 py-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Avatar>
+              <AvatarFallback>
+                {email.from.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="font-semibold">{email.from.name}</div>
+              <div className="text-sm text-muted-foreground">
+                To: {email.to.map((to) => to.name).join(", ")}
               </div>
-              <div className="text-muted-foreground">
-                {format(new Date(email.date), "PPpp")}
-              </div>
-            </div>
-            <div className="text-sm">
-              <span className="font-semibold">To: </span>
-              {email.to.map((to) => to.name).join(", ")}
             </div>
           </div>
+          <time className="text-sm text-muted-foreground">
+            {format(new Date(email.date), "PPpp")}
+          </time>
         </div>
+        
+        <h2 className="text-lg font-medium tracking-tight">
+          {email.subject}
+        </h2>
+      </div>
       </div>
 
       {/* Email Content */}
