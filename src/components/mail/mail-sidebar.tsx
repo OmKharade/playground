@@ -19,6 +19,13 @@ interface MailSidebarProps{
   onSelectFolder: (folder: string) => void
 }
 export function MailSidebar({accounts, selectedFolder, onSelectFolder,selectedAccount, onSelectAccount}: MailSidebarProps) {
+  const folders = [
+    { id: 'inbox', label: 'Inbox', icon: <Inbox className="mr-2 h-4 w-4" /> },
+    { id: 'sent', label: 'Sent', icon: <Send className="mr-2 h-4 w-4" /> },
+    { id: 'starred', label: 'Starred', icon: <Star className="mr-2 h-4 w-4" /> },
+    { id: 'archived', label: 'Archived', icon: <ArchiveX className="mr-2 h-4 w-4" /> },
+    { id: 'trash', label: 'Trash', icon: <Trash className="mr-2 h-4 w-4" /> },
+  ]
   return (
     <div className="w-[240px] p-4">
       <AccountSwitcher
@@ -28,21 +35,17 @@ export function MailSidebar({accounts, selectedFolder, onSelectFolder,selectedAc
       />
       <ScrollArea className="h-[calc(100vh-150px)]">
         <div className="space-y-2 mt-4">
-          <Button variant="ghost" className="w-full justify-start">
-            <Inbox className="mr-2" /> Inbox
-          </Button>
-          <Button variant="ghost" className="w-full justify-start">
-            <Send className="mr-2" /> Sent
-          </Button>
-          <Button variant="ghost" className="w-full justify-start">
-            <Star className="mr-2" /> Starred
-          </Button>
-          <Button variant="ghost" className="w-full justify-start">
-            <ArchiveX className="mr-2" /> Archive
-          </Button>
-          <Button variant="ghost" className="w-full justify-start">
-            <Trash className="mr-2" /> Trash
-          </Button>
+          {folders.map((folder) => (
+            <Button
+              key={folder.id}
+              variant={selectedFolder === folder.id ? 'secondary' : 'ghost'}
+              className="w-full justify-start"
+              onClick={() => onSelectFolder(folder.id)}
+            >
+              {folder.icon}
+              {folder.label}
+            </Button>
+          ))}
         </div>
       </ScrollArea>
       <Button className="w-full" size="lg">

@@ -7,15 +7,16 @@ import { Email } from "@/types/database"
 
 interface MailListProps {
   emails: Email[]
+  folder: string
   selectedEmail?: string
   onSelectEmail: (emailId: string) => void
 }
 
-export function MailList({ emails, selectedEmail, onSelectEmail }: MailListProps) {
+export function MailList({ emails, selectedEmail, onSelectEmail, folder }: MailListProps) {
   return (
     <div className="w-[400px]">
       <div className="p-4 border-b">
-        <h2 className="text-2xl font-semibold">Inbox</h2>
+        <h2 className="text-2xl font-semibold capitalize">{folder}</h2>
       </div>
       <div className="overflow-auto h-[calc(100vh-120px)] p-2 space-y-2">
         {emails.map((email) => (

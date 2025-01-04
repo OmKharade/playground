@@ -40,11 +40,11 @@ export function Mail(){
     
     useEffect(() => {
       async function loadEmails() {
-        if (!selectedAccount) return
+        if (!selectedAccount || !selectedFolder) return
         
         try {
           setLoading(true)
-          const emails = await emailApi.getEmails(selectedAccount, "inbox")
+          const emails = await emailApi.getEmails(selectedAccount, selectedFolder)
           setEmails(emails)
         } catch (error) {
           console.error("Failed to load emails:", error)
@@ -53,7 +53,7 @@ export function Mail(){
         }
       }
       loadEmails()
-    }, [selectedAccount])
+    }, [selectedAccount, selectedFolder])
 
     const currentEmail = emails.find((email) => email.id === selectedEmail);
 
@@ -76,6 +76,7 @@ export function Mail(){
           emails={emails}
           selectedEmail={selectedEmail}
           onSelectEmail={setSelectedEmail}
+          folder = {selectedFolder}
         />
         <Separator orientation="vertical" />
         <MailView email={currentEmail} />
