@@ -4,15 +4,13 @@ import { Separator } from "../ui/separator";
 import { MailSidebar } from "./mail-sidebar";
 import { useState, useEffect } from "react";
 import { MailList } from "./mail-list";
-import { accounts, emails } from "@/lib/data/mail-data"
 import { MailView } from "./mail-view";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/database";
 import type { Account, Email } from "@/types/database";
 import { accountApi } from "@/lib/api/accounts";
 import { emailApi } from "@/lib/api/emails";
-
-const supabase = createClientComponentClient<Database>()
+import { SidebarSkeleton, MailListSkeleton, MailViewSkeleton } from "./mail-skeleton";
 
 export function Mail(){
     const [accounts, setAccounts] = useState<Account[]>([])
@@ -58,29 +56,37 @@ export function Mail(){
     const currentEmail = emails.find((email) => email.id === selectedEmail);
 
     if (!selectedAccount) {
-      return <div>Loading...</div>;
+      return (
+        <div className="flex h-screen">
+          <SidebarSkeleton />
+          <MailListSkeleton />
+          <MailViewSkeleton />
+        </div>
+      )
     }
     
   return (
-    <>
         <div className="flex h-screen">
-            <MailSidebar
-                accounts = {accounts}
-                selectedFolder = {selectedFolder}
-                onSelectFolder = {setSelectedFolder}
-                selectedAccount = {selectedAccount}
-                onSelectAccount = {setSelectedAccount}
-            />
-            <Separator orientation="vertical"/>
-            <MailList
-          emails={emails}
-          selectedEmail={selectedEmail}
-          onSelectEmail={setSelectedEmail}
-          folder = {selectedFolder}
-        />
-        <Separator orientation="vertical" />
-        <MailView email={currentEmail} />
+          <MailSidebar
+            accounts = {accounts}
+            selectedFolder = {selectedFolder}
+            onSelectFolder = {setSelectedFolder}
+            selectedAccount = {selectedAccount}
+            onSelectAccount = {setSelectedAccount}
+          />
+          <Separator orientation="vertical"/>
+          <MailList
+            emails={emails}
+            selectedEmail={selectedEmail}
+            onSelectEmail={setSelectedEmail}
+            folder = {selectedFolder}
+            loading = {loading}
+          />
+          <Separator orientation="vertical" />
+          <MailView 
+            email={currentEmail}
+            loading={loading}
+          />
         </div>
-    </>
     )
 }

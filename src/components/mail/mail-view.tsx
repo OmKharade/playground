@@ -19,12 +19,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
+import { MailViewSkeleton } from "./mail-skeleton"
 
 interface MailViewProps {
   email?: Email
+  loading?: boolean
 }
 
-export function MailView({ email }: MailViewProps) {
+export function MailView({ email, loading }: MailViewProps) {
+  if(loading) return <MailViewSkeleton />
   if (!email) return null
 
   return (

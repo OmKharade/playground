@@ -4,15 +4,18 @@ import { Star } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "../ui/badge"
 import { Email } from "@/types/database"
+import { MailListSkeleton } from "./mail-skeleton"
 
 interface MailListProps {
   emails: Email[]
   folder: string
   selectedEmail?: string
   onSelectEmail: (emailId: string) => void
+  loading?: boolean
 }
 
-export function MailList({ emails, selectedEmail, onSelectEmail, folder }: MailListProps) {
+export function MailList({ emails, selectedEmail, onSelectEmail, folder, loading }: MailListProps) {
+  if(loading) return <MailListSkeleton />
   return (
     <div className="w-[400px]">
       <div className="p-4 border-b">
