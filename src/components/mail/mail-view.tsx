@@ -18,6 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 
 interface MailViewProps {
   email?: Email
@@ -30,29 +31,67 @@ export function MailView({ email }: MailViewProps) {
     <div className="flex-1 overflow-auto">
       <div className="border-b">
         <div className="p-3 border-b flex items-center gap-2">
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon">
-              <Reply className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <ReplyAll className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Forward className="h-5 w-5" />
-            </Button>
+          <div className="flex items-center gap-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Reply className="h-5 w-5" />
+                </Button>
+                </TooltipTrigger>
+                <TooltipContent>Reply</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <ReplyAll className="h-5 w-5" />
+                </Button>
+                </TooltipTrigger>
+                <TooltipContent>Reply All</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Forward className="h-5 w-5" />
+                </Button>
+                </TooltipTrigger>
+                <TooltipContent>Forward</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
 
           <div className="h-6 w-px bg-border mx-2" />
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon">
-              <ArchiveX className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Trash className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Star className={`h-5 w-5 ${email.is_starred ? "fill-yellow-400 text-yellow-400" : ""}`} />
-            </Button>
+          <div className="flex items-center gap-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <ArchiveX className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Archive</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Trash className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Delete</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Star className={`h-5 w-5 ${email.is_starred ? "fill-yellow-400 text-yellow-400" : ""}`} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{email.is_starred ? 'Unstar' : 'Star'}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
 
           <div className="ml-auto">
