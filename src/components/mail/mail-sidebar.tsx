@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import { AccountSwitcher } from "./account-switcher"
 import { Account } from "@/types/database"
+import { ModeToggle } from "../theme-toggle"
 
 interface MailSidebarProps{
   accounts: Account[]
@@ -33,7 +34,7 @@ export function MailSidebar({accounts, selectedFolder, onSelectFolder,selectedAc
         selectedAccount = {selectedAccount}
         onSelectAccount = {onSelectAccount}
       />
-      <ScrollArea className="h-[calc(100vh-150px)]">
+      <ScrollArea className="h-[calc(100vh-200px)]">
         <div className="space-y-2 mt-4">
           {folders.map((folder) => (
             <Button
@@ -48,7 +49,8 @@ export function MailSidebar({accounts, selectedFolder, onSelectFolder,selectedAc
           ))}
         </div>
       </ScrollArea>
-      <Button className="w-full" size="lg">
+      <ModeToggle/>
+      <Button className="mt-4 w-full" size="lg">
         <PenSquare className="mr-2" />
         Compose
       </Button>

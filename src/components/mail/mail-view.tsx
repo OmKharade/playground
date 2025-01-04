@@ -74,7 +74,7 @@ export function MailView({ email, loading }: MailViewProps) {
                     <ArchiveX className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Archive</TooltipContent>
+                <TooltipContent>Move to Archive</TooltipContent>
               </Tooltip>
 
               <Tooltip>
@@ -83,7 +83,7 @@ export function MailView({ email, loading }: MailViewProps) {
                     <Trash className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Delete</TooltipContent>
+                <TooltipContent>Move to Trash</TooltipContent>
               </Tooltip>
 
               <Tooltip>
