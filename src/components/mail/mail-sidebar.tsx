@@ -12,6 +12,8 @@ import { AccountSwitcher } from "./account-switcher"
 import { Account } from "@/types/database"
 import { ModeToggle } from "../theme-toggle"
 import { SidebarSkeleton } from "./mail-skeleton"
+import { ComposeEmail } from "./compose-email"
+import { useState } from "react"
 
 interface MailSidebarProps{
   accounts: Account[]
@@ -30,6 +32,7 @@ export function MailSidebar({accounts, selectedFolder, onSelectFolder,selectedAc
     { id: 'archived', label: 'Archived', icon: <ArchiveX className="mr-2 h-4 w-4" /> },
     { id: 'trash', label: 'Trash', icon: <Trash className="mr-2 h-4 w-4" /> },
   ]
+  const [showCompose, setShowCompose] = useState(false)
   return (
     <div className="w-[240px] p-4">
       <AccountSwitcher
@@ -60,10 +63,23 @@ export function MailSidebar({accounts, selectedFolder, onSelectFolder,selectedAc
         </div>
       </ScrollArea>
       <ModeToggle/>
-      <Button className="mt-4 w-full" size="lg">
+      <Button 
+        className="mt-4 w-full" 
+        size="lg"
+        onClick={() => setShowCompose(true)}
+      >
         <PenSquare className="mr-2" />
         Compose
       </Button>
+      <ComposeEmail
+        open={showCompose}
+        onOpenChange={setShowCompose}
+        sender={{ name: "John Doe", email: "john@example.com" }}
+        onSend={(email) => {
+          console.log(email)
+          setShowCompose(false)
+        }}
+      />
     </div>
   )
 }

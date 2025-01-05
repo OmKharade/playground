@@ -21,6 +21,8 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 import { MailViewSkeleton } from "./mail-skeleton"
 import { Avatar, AvatarFallback } from "../ui/avatar"
+import { useState } from "react"
+import { EmailAction } from "./email-action"
 
 interface MailViewProps {
   email?: Email
@@ -28,6 +30,12 @@ interface MailViewProps {
 }
 
 export function MailView({ email, loading }: MailViewProps) {
+  
+  const [action, setAction] = useState<{type: 'reply' | 'replyAll' | 'forward', open: boolean}>({
+    type: 'reply',
+    open: false
+  })
+  
   if(loading) return <MailViewSkeleton />
   if (!email) return null
 
@@ -35,40 +43,50 @@ export function MailView({ email, loading }: MailViewProps) {
     <div className="flex-1 overflow-auto">
       <div className="border-b">
         <div className="p-3 border-b flex items-center gap-2">
+          <TooltipProvider>
           <div className="flex items-center gap-2">
-            <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Reply className="h-5 w-5" />
-                </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => setAction({ type: 'reply', open: true })}
+                  >
+                    <Reply className="h-5 w-5" />
+                  </Button>
                 </TooltipTrigger>
                 <TooltipContent>Reply</TooltipContent>
               </Tooltip>
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <ReplyAll className="h-5 w-5" />
-                </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => setAction({ type: 'replyAll', open: true })}
+                  >
+                    <ReplyAll className="h-5 w-5" />
+                  </Button>
                 </TooltipTrigger>
                 <TooltipContent>Reply All</TooltipContent>
               </Tooltip>
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Forward className="h-5 w-5" />
-                </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => setAction({ type: 'forward', open: true })}
+                  >
+                    <Forward className="h-5 w-5" />
+                  </Button>
                 </TooltipTrigger>
                 <TooltipContent>Forward</TooltipContent>
               </Tooltip>
-            </TooltipProvider>
           </div>
 
           <div className="h-6 w-px bg-border mx-2" />
           <div className="flex items-center gap-2">
-            <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="ghost" size="icon">
@@ -95,8 +113,8 @@ export function MailView({ email, loading }: MailViewProps) {
                 </TooltipTrigger>
                 <TooltipContent>{email.is_starred ? 'Unstar' : 'Star'}</TooltipContent>
               </Tooltip>
-            </TooltipProvider>
           </div>
+          </TooltipProvider>
 
           <div className="ml-auto">
             <DropdownMenu>
@@ -116,7 +134,19 @@ export function MailView({ email, loading }: MailViewProps) {
             </DropdownMenu>
           </div>
         </div>
-
+        {action.open && (
+        <EmailAction
+          open={action.open}
+          onOpenChange={(open) => setAction({ ...action, open })}
+          type={action.type}
+          originalEmail={email}
+          sender={{ name: "Current User", email: "user@example.com" }}
+          onSend={(email) => {
+            console.log(email)
+            setAction({ ...action, open: false })
+          }}
+        />
+      )}
         {/* Email Header */}
         <div className="px-6 py-4 space-y-4">
         <div className="flex items-center justify-between">
@@ -148,7 +178,7 @@ export function MailView({ email, loading }: MailViewProps) {
       <div className="p-6">
         <div className="whitespace-pre-wrap">{email.body}</div>
         {email.attachments && email.attachments.length > 0 && (
-          <div className="border rounded-lg p-4">
+          <div className="mt-4 border rounded-lg p-4">
             <h3 className="font-semibold mb-2">Attachments</h3>
             {email.attachments.map((attachment, index) => (
               <div
