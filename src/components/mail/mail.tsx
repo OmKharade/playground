@@ -11,6 +11,15 @@ import type { Account, Email } from "@/types/database";
 import { accountApi } from "@/lib/api/accounts";
 import { emailApi } from "@/lib/api/emails";
 import { SidebarSkeleton, MailListSkeleton, MailViewSkeleton } from "./mail-skeleton";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "../ui/toast";
+
+interface LastAction {
+  type: 'archived' | 'trash'
+  emailId: string
+  email: Email
+  originalFolder: string
+}
 
 export function Mail(){
     const [accounts, setAccounts] = useState<Account[]>([])
@@ -22,7 +31,8 @@ export function Mail(){
     const [loading, setLoading] = useState(true)
     const [isFolderCountLoading, setIsFolderCountLoading] = useState(true)
     const [preventAutoRead, setPreventAutoRead] = useState(false)
-
+    const [lastAction, setLastAction] = useState<LastAction | null>(null)
+    const { toast } = useToast()
 
     useEffect(() => {
       async function loadAccounts(){
@@ -81,6 +91,42 @@ export function Mail(){
       setPreventAutoRead(false)
     }
 
+    const handleUndo = async (actionType: 'archived' | 'trash', emailId: string, originalFolder: string) => {
+      try {
+        await emailApi.moveToFolder(emailId, originalFolder)
+        
+        if (selectedFolder === originalFolder) {
+          const emailToRestore = lastAction?.email
+          if (emailToRestore) {
+            setEmails(prev => [...prev, emailToRestore])
+          }
+        }
+        
+        setLastAction(null)
+        setSelectedEmail(undefined)
+        loadFolderCounts()
+
+        const updatedEmails = await emailApi.getEmails(selectedAccount!, selectedFolder)
+        setEmails(updatedEmails)
+      } catch (error) {
+        console.error('Failed to undo action:', error)
+      }
+    }
+    
+    const showUndoToast = (action: 'archived' | 'trash', email: Email) => {
+      const originalFolder = selectedFolder
+      setLastAction({ type: action, emailId: email.id, email, originalFolder })
+      toast({
+        description: `Email ${action === 'archived' ? 'archived' : 'moved to trash'}`,
+        action: (
+          <ToastAction altText="Undo" onClick={() => handleUndo(action, email.id, originalFolder)}>
+          Undo
+        </ToastAction>
+        ),
+        duration: 5000,
+      })
+    }
+
     if (!selectedAccount) {
       return (
         <div className="flex h-screen">
@@ -117,12 +163,20 @@ export function Mail(){
             preventAutoRead={preventAutoRead}
             onEmailAction={(action, emailId) => {
               if (action === 'archived' && selectedFolder !== 'archived') {
-                setEmails(emails.filter(email => email.id !== emailId))
-                setSelectedEmail(undefined)
+                const email = emails.find(e => e.id === emailId)
+                if (email) {
+                  setEmails(emails.filter(e => e.id !== emailId))
+                  setSelectedEmail(undefined)
+                  showUndoToast('archived', email)
+                }
               }
               if (action === 'trash' && selectedFolder !== 'trash') {
-                setEmails(emails.filter(email => email.id !== emailId))
-                setSelectedEmail(undefined)
+                const email = emails.find(e => e.id === emailId)
+                if (email) {
+                  setEmails(emails.filter(e => e.id !== emailId))
+                  setSelectedEmail(undefined)
+                  showUndoToast('trash', email)
+                }
               }
               if (action === 'star') {
                 const email = emails.find(e => e.id === emailId)

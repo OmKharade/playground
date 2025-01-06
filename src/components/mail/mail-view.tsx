@@ -200,7 +200,7 @@ export function MailView({ email, loading, onEmailAction, preventAutoRead}: Mail
                   }}
                 >
                   <Mail className="mr-2 h-4 w-4" />
-                  Mark as unread
+                  Mark as {email?.is_read ? 'unread' : 'read'}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
