@@ -24,6 +24,7 @@ import { Avatar, AvatarFallback } from "../ui/avatar"
 import { useState } from "react"
 import { EmailAction } from "./email-action"
 import { emailApi } from "@/lib/api/emails"
+import { cn } from "@/lib/utils"
 
 interface MailViewProps {
   email?: Email
@@ -112,7 +113,19 @@ export function MailView({ email, loading, onEmailAction}: MailViewProps) {
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon">
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={async () => {
+                      if (!email) return
+                      try {
+                        await emailApi.moveToFolder(email.id, 'trash')
+                        onEmailAction?.('trash', email.id)
+                      } catch (error) {
+                        console.error('Failed to move email to trash:', error)
+                      }
+                    }}
+                  >
                     <Trash className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
@@ -121,8 +134,27 @@ export function MailView({ email, loading, onEmailAction}: MailViewProps) {
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Star className={`h-5 w-5 ${email.is_starred ? "fill-yellow-400 text-yellow-400" : ""}`} />
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={async () => {
+                      if (!email) return
+                      try {
+                        const newStarredState = !email.is_starred
+                        await emailApi.toggleStar(email.id, newStarredState)
+                  
+                        const targetFolder = newStarredState ? 'starred' : 'inbox'
+                        await emailApi.moveToFolder(email.id, targetFolder)
+                        onEmailAction?.('star', email.id)
+                      } catch (error) {
+                        console.error('Failed to toggle star:', error)
+                      }
+                    }}
+                  >
+                    <Star className={cn(
+                      "h-5 w-5",
+                      email.is_starred && "fill-yellow-400 text-yellow-400"
+                    )} />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>{email.is_starred ? 'Unstar' : 'Star'}</TooltipContent>

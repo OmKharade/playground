@@ -111,6 +111,30 @@ export function Mail(){
                 setEmails(emails.filter(email => email.id !== emailId))
                 setSelectedEmail(undefined)
               }
+              if (action === 'trash' && selectedFolder !== 'trash') {
+                setEmails(emails.filter(email => email.id !== emailId))
+                setSelectedEmail(undefined)
+              }
+              if (action === 'star') {
+                const email = emails.find(e => e.id === emailId)
+                const newStarredState = !email?.is_starred
+                
+                // Remove from current folder if:
+                // - Starring from inbox -> moves to starred
+                // - Unstarring from starred -> moves to inbox
+                if ((selectedFolder === 'inbox' && newStarredState) || 
+                    (selectedFolder === 'starred' && !newStarredState)) {
+                  setEmails(emails.filter(email => email.id !== emailId))
+                  setSelectedEmail(undefined)
+                } else {
+                  // Update star status if staying in current folder
+                  setEmails(emails.map(email => 
+                    email.id === emailId 
+                      ? { ...email, is_starred: newStarredState }
+                      : email
+                  ))
+                }
+              }
               loadFolderCounts()
             }}
           />
