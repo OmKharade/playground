@@ -23,13 +23,15 @@ import { MailViewSkeleton } from "./mail-skeleton"
 import { Avatar, AvatarFallback } from "../ui/avatar"
 import { useState } from "react"
 import { EmailAction } from "./email-action"
+import { emailApi } from "@/lib/api/emails"
 
 interface MailViewProps {
   email?: Email
   loading?: boolean
+  onEmailAction?: (action: string, emailId: string) => void
 }
 
-export function MailView({ email, loading }: MailViewProps) {
+export function MailView({ email, loading, onEmailAction}: MailViewProps) {
   
   const [action, setAction] = useState<{type: 'reply' | 'replyAll' | 'forward', open: boolean}>({
     type: 'reply',
@@ -89,9 +91,21 @@ export function MailView({ email, loading }: MailViewProps) {
           <div className="flex items-center gap-2">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <ArchiveX className="h-5 w-5" />
-                  </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={async () => {
+                    if (!email) return
+                    try {
+                      await emailApi.moveToFolder(email.id, 'archived')
+                      onEmailAction?.('archived', email.id)
+                    } catch (error) {
+                      console.error('Failed to archive email:', error)
+                    }
+                  }}
+                >
+                  <ArchiveX className="h-5 w-5" />
+                </Button>
                 </TooltipTrigger>
                 <TooltipContent>Move to Archive</TooltipContent>
               </Tooltip>

@@ -21,7 +21,7 @@ export const emailApi = {
         return data
     },
     getFolderCounts: async (accountId: string) => {
-        const folders = ['inbox', 'sent', 'drafts', 'spam', 'trash', 'starred']
+        const folders = ['inbox', 'sent', 'archived', 'trash', 'starred']
         const counts: Record<string, number> = {}
         
         for (const folder of folders) {

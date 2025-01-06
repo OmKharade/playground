@@ -2,7 +2,7 @@
 
 import { Separator } from "../ui/separator";
 import { MailSidebar } from "./mail-sidebar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MailList } from "./mail-list";
 import { MailView } from "./mail-view";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -57,21 +57,22 @@ export function Mail(){
 
     const currentEmail = emails.find((email) => email.id === selectedEmail);
     
+    const loadFolderCounts = useCallback(async () => {
+        if (!selectedAccount) return
+        setIsFolderCountLoading(true)
+        try {
+            const counts = await emailApi.getFolderCounts(selectedAccount)
+            setFolderCounts(counts)
+        } catch (error) {
+            console.error("Failed to load folder counts:", error)
+        } finally {
+            setIsFolderCountLoading(false)
+        }
+    }, [selectedAccount])
+        
     useEffect(() => {
-      async function loadFolderCounts() {
-          if (!selectedAccount) return
-          setIsFolderCountLoading(true)
-          try {
-              const counts = await emailApi.getFolderCounts(selectedAccount)
-              setFolderCounts(counts)
-          } catch (error) {
-              console.error("Failed to load folder counts:", error)
-          } finally {
-              setIsFolderCountLoading(false)
-          }
-      }
-      loadFolderCounts()
-  }, [selectedAccount])
+        loadFolderCounts()
+    }, [loadFolderCounts])
     if (!selectedAccount) {
       return (
         <div className="flex h-screen">
@@ -105,6 +106,13 @@ export function Mail(){
           <MailView 
             email={currentEmail}
             loading={loading}
+            onEmailAction={(action, emailId) => {
+              if (action === 'archived' && selectedFolder !== 'archived') {
+                setEmails(emails.filter(email => email.id !== emailId))
+                setSelectedEmail(undefined)
+              }
+              loadFolderCounts()
+            }}
           />
         </div>
     )
