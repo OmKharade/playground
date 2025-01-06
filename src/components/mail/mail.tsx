@@ -21,6 +21,8 @@ export function Mail(){
     const [folderCounts, setFolderCounts] = useState<Record<string, number>>({})
     const [loading, setLoading] = useState(true)
     const [isFolderCountLoading, setIsFolderCountLoading] = useState(true)
+    const [preventAutoRead, setPreventAutoRead] = useState(false)
+
 
     useEffect(() => {
       async function loadAccounts(){
@@ -73,6 +75,12 @@ export function Mail(){
     useEffect(() => {
         loadFolderCounts()
     }, [loadFolderCounts])
+
+    const handleSelectEmail = (emailId: string) => {
+      setSelectedEmail(emailId)
+      setPreventAutoRead(false)
+    }
+
     if (!selectedAccount) {
       return (
         <div className="flex h-screen">
@@ -98,7 +106,7 @@ export function Mail(){
           <MailList
             emails={emails}
             selectedEmail={selectedEmail}
-            onSelectEmail={setSelectedEmail}
+            onSelectEmail={handleSelectEmail}
             folder = {selectedFolder}
             loading = {loading}
           />
@@ -106,6 +114,7 @@ export function Mail(){
           <MailView 
             email={currentEmail}
             loading={loading}
+            preventAutoRead={preventAutoRead}
             onEmailAction={(action, emailId) => {
               if (action === 'archived' && selectedFolder !== 'archived') {
                 setEmails(emails.filter(email => email.id !== emailId))
@@ -119,21 +128,29 @@ export function Mail(){
                 const email = emails.find(e => e.id === emailId)
                 const newStarredState = !email?.is_starred
                 
-                // Remove from current folder if:
-                // - Starring from inbox -> moves to starred
-                // - Unstarring from starred -> moves to inbox
                 if ((selectedFolder === 'inbox' && newStarredState) || 
                     (selectedFolder === 'starred' && !newStarredState)) {
                   setEmails(emails.filter(email => email.id !== emailId))
                   setSelectedEmail(undefined)
                 } else {
-                  // Update star status if staying in current folder
-                  setEmails(emails.map(email => 
+                   setEmails(emails.map(email => 
                     email.id === emailId 
                       ? { ...email, is_starred: newStarredState }
                       : email
                   ))
                 }
+              }
+              if (action === 'read') {
+                const email = emails.find(e => e.id === emailId)
+                const newReadState = !email?.is_read
+                if (!newReadState) {
+                  setPreventAutoRead(true)
+                }
+                setEmails(emails.map(email => 
+                  email.id === emailId 
+                    ? { ...email, is_read: newReadState }
+                    : email
+                ))
               }
               loadFolderCounts()
             }}
