@@ -5,8 +5,6 @@ import { MailSidebar } from "./mail-sidebar";
 import { useState, useEffect, useCallback } from "react";
 import { MailList } from "./mail-list";
 import { MailView } from "./mail-view";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "@/types/database";
 import type { Account, Email } from "@/types/database";
 import { accountApi } from "@/lib/api/accounts";
 import { emailApi } from "@/lib/api/emails";
@@ -15,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "../ui/toast";
 import { useMailState } from "@/hooks/mail/use-mail-state";
 import { useFolderState } from "@/hooks/mail/use-folder-state";
+import { useAccountState } from "@/hooks/mail/use-account-state";
 
 interface LastAction {
   type: 'archived' | 'trash'
@@ -24,8 +23,12 @@ interface LastAction {
 }
 
 export function Mail(){
-    const [accounts, setAccounts] = useState<Account[]>([])
-    const [selectedAccount, setSelectedAccount] = useState<string>()
+    const {
+      accounts,
+      selectedAccount,
+      setSelectedAccount
+    } = useAccountState()
+  
     const {
       selectedFolder,
       setSelectedFolder,
@@ -33,6 +36,7 @@ export function Mail(){
       isFolderCountLoading,
       loadFolderCounts
     } = useFolderState(selectedAccount)
+
     const {
       emails,
       selectedEmail,
@@ -43,24 +47,9 @@ export function Mail(){
       setPreventAutoRead,
       handleSelectEmail
     } = useMailState(selectedAccount, selectedFolder)
+    
     const [lastAction, setLastAction] = useState<LastAction | null>(null)
     const { toast } = useToast()
-
-    useEffect(() => {
-      async function loadAccounts(){
-        try{
-          const accounts = await accountApi.getAccounts()
-          setAccounts(accounts)
-          if(accounts.length > 0){
-            setSelectedAccount(accounts[0].id)
-          }
-        }
-        catch(error){
-          console.error(error)
-        }
-      }
-      loadAccounts()
-    },[])
     
     const currentEmail = emails.find((email) => email.id === selectedEmail);
         
