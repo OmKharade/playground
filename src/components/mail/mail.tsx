@@ -13,6 +13,7 @@ import { emailApi } from "@/lib/api/emails";
 import { SidebarSkeleton, MailListSkeleton, MailViewSkeleton } from "./mail-skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "../ui/toast";
+import { useMailState } from "@/hooks/mail/use-mail-state";
 
 interface LastAction {
   type: 'archived' | 'trash'
@@ -23,14 +24,20 @@ interface LastAction {
 
 export function Mail(){
     const [accounts, setAccounts] = useState<Account[]>([])
-    const [emails, setEmails] = useState<Email[]>([])
-    const [selectedEmail, setSelectedEmail] = useState<string | undefined>()
     const [selectedAccount, setSelectedAccount] = useState<string>()
     const [selectedFolder, setSelectedFolder] = useState<string>('inbox')
+    const {
+      emails,
+      selectedEmail,
+      loading,
+      preventAutoRead,
+      setEmails,
+      setSelectedEmail,
+      setPreventAutoRead,
+      handleSelectEmail
+    } = useMailState(selectedAccount, selectedFolder)
     const [folderCounts, setFolderCounts] = useState<Record<string, number>>({})
-    const [loading, setLoading] = useState(true)
     const [isFolderCountLoading, setIsFolderCountLoading] = useState(true)
-    const [preventAutoRead, setPreventAutoRead] = useState(false)
     const [lastAction, setLastAction] = useState<LastAction | null>(null)
     const { toast } = useToast()
 
@@ -50,23 +57,6 @@ export function Mail(){
       loadAccounts()
     },[])
     
-    useEffect(() => {
-      async function loadEmails() {
-        if (!selectedAccount || !selectedFolder) return
-        
-        try {
-          setLoading(true)
-          const emails = await emailApi.getEmails(selectedAccount, selectedFolder)
-          setEmails(emails)
-        } catch (error) {
-          console.error("Failed to load emails:", error)
-        } finally {
-          setLoading(false)
-        }
-      }
-      loadEmails()
-    }, [selectedAccount, selectedFolder])
-
     const currentEmail = emails.find((email) => email.id === selectedEmail);
     
     const loadFolderCounts = useCallback(async () => {
@@ -85,11 +75,6 @@ export function Mail(){
     useEffect(() => {
         loadFolderCounts()
     }, [loadFolderCounts])
-
-    const handleSelectEmail = (emailId: string) => {
-      setSelectedEmail(emailId)
-      setPreventAutoRead(false)
-    }
 
     const handleUndo = async (actionType: 'archived' | 'trash', emailId: string, originalFolder: string) => {
       try {
