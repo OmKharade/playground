@@ -14,6 +14,7 @@ import { SidebarSkeleton, MailListSkeleton, MailViewSkeleton } from "./mail-skel
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "../ui/toast";
 import { useMailState } from "@/hooks/mail/use-mail-state";
+import { useFolderState } from "@/hooks/mail/use-folder-state";
 
 interface LastAction {
   type: 'archived' | 'trash'
@@ -25,7 +26,13 @@ interface LastAction {
 export function Mail(){
     const [accounts, setAccounts] = useState<Account[]>([])
     const [selectedAccount, setSelectedAccount] = useState<string>()
-    const [selectedFolder, setSelectedFolder] = useState<string>('inbox')
+    const {
+      selectedFolder,
+      setSelectedFolder,
+      folderCounts,
+      isFolderCountLoading,
+      loadFolderCounts
+    } = useFolderState(selectedAccount)
     const {
       emails,
       selectedEmail,
@@ -36,8 +43,6 @@ export function Mail(){
       setPreventAutoRead,
       handleSelectEmail
     } = useMailState(selectedAccount, selectedFolder)
-    const [folderCounts, setFolderCounts] = useState<Record<string, number>>({})
-    const [isFolderCountLoading, setIsFolderCountLoading] = useState(true)
     const [lastAction, setLastAction] = useState<LastAction | null>(null)
     const { toast } = useToast()
 
@@ -58,19 +63,6 @@ export function Mail(){
     },[])
     
     const currentEmail = emails.find((email) => email.id === selectedEmail);
-    
-    const loadFolderCounts = useCallback(async () => {
-        if (!selectedAccount) return
-        setIsFolderCountLoading(true)
-        try {
-            const counts = await emailApi.getFolderCounts(selectedAccount)
-            setFolderCounts(counts)
-        } catch (error) {
-            console.error("Failed to load folder counts:", error)
-        } finally {
-            setIsFolderCountLoading(false)
-        }
-    }, [selectedAccount])
         
     useEffect(() => {
         loadFolderCounts()
